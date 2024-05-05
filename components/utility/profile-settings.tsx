@@ -118,6 +118,10 @@ export const ProfileSettings: FC<ProfileSettingsProps> = ({}) => {
     profile?.openrouter_api_key || ""
   )
 
+  const [togetherAPIKey, setTogetherAPIKey] = useState(
+    profile?.together_api_key || ""
+  )
+
   const handleSignOut = async () => {
     await supabase.auth.signOut()
     router.push("/login")
@@ -719,6 +723,22 @@ export const ProfileSettings: FC<ProfileSettingsProps> = ({}) => {
                       type="password"
                       value={openrouterAPIKey}
                       onChange={e => setOpenrouterAPIKey(e.target.value)}
+                    />
+                  </>
+                )}
+              </div>
+
+              <div className="space-y-1">
+                {envKeyMap["together"] ? (
+                  <Label>Together API key set by admin.</Label>
+                ) : (
+                  <>
+                    <Label>Together API Key</Label>
+                    <Input
+                      placeholder="Together API Key"
+                      type="password"
+                      value={togetherAPIKey}
+                      onChange={e => setTogetherAPIKey(e.target.value)}
                     />
                   </>
                 )}
