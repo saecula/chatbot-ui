@@ -4,12 +4,6 @@ import { ChatSettings } from "@/types"
 import { OpenAIStream, StreamingTextResponse } from "ai"
 import OpenAI from "openai"
 
-/* TODO: get llama model in chatSettings.model; 
-example mistralai/Mixtral-8x7B-Instruct-v0.1
-set limits like:
-        CHAT_SETTING_LIMITS[chatSettings.model].MAX_TOKEN_OUTPUT_LENGTH,
-*/
-
 export async function POST(request: Request) {
   const json = await request.json()
   const { chatSettings, messages } = json as {
@@ -19,7 +13,6 @@ export async function POST(request: Request) {
 
   try {
     const profile = await getServerProfile()
-    console.log("halloo api key", profile.together_api_key)
     checkApiKey(profile.together_api_key, "Together")
 
     // Together is compatible the OpenAI SDK
