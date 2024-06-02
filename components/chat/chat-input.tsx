@@ -36,7 +36,6 @@ export const ChatInput: FC<ChatInputProps> = ({}) => {
     isAssistantPickerOpen,
     focusAssistant,
     setFocusAssistant,
-    userInput,
     chatMessages,
     isGenerating,
     selectedPreset,
@@ -64,7 +63,7 @@ export const ChatInput: FC<ChatInputProps> = ({}) => {
     handleFocusChatInput
   } = useChatHandler()
 
-  const { handleInputChange } = usePromptAndCommand()
+  const { localInput, clearInput, handleInputChange } = usePromptAndCommand()
 
   const { filesToAccept, handleSelectDeviceFile } = useSelectFileHandler()
 
@@ -81,11 +80,18 @@ export const ChatInput: FC<ChatInputProps> = ({}) => {
     }, 200) // FIX: hacky
   }, [selectedPreset, selectedAssistant])
 
-  const handleKeyDown = (event: React.KeyboardEvent) => {
+  const handleKeyDown = async (event: React.KeyboardEvent) => {
     if (!isTyping && event.key === "Enter" && !event.shiftKey) {
       event.preventDefault()
       setIsPromptPickerOpen(false)
-      handleSendMessage(userInput, chatMessages, false)
+
+      const { success } = await handleSendMessage(
+        localInput,
+        chatMessages,
+        false
+      )
+
+      if (success) clearInput()
     }
 
     // Consolidate conditions to avoid TypeScript error
@@ -244,7 +250,7 @@ export const ChatInput: FC<ChatInputProps> = ({}) => {
             `Ask anything. Type @  /  #  !`
           )}
           onValueChange={handleInputChange}
-          value={userInput}
+          value={localInput}
           minRows={1}
           maxRows={18}
           onKeyDown={handleKeyDown}
@@ -264,12 +270,18 @@ export const ChatInput: FC<ChatInputProps> = ({}) => {
             <IconSend
               className={cn(
                 "bg-primary text-secondary rounded p-1",
-                !userInput && "cursor-not-allowed opacity-50"
+                !localInput && "cursor-not-allowed opacity-50"
               )}
-              onClick={() => {
-                if (!userInput) return
+              onClick={async () => {
+                if (!localInput) return
 
-                handleSendMessage(userInput, chatMessages, false)
+                const { success } = await handleSendMessage(
+                  localInput,
+                  chatMessages,
+                  false
+                )
+
+                if (success) clearInput()
               }}
               size={30}
             />

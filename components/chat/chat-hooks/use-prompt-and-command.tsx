@@ -5,14 +5,15 @@ import { getAssistantToolsByAssistantId } from "@/db/assistant-tools"
 import { getCollectionFilesByCollectionId } from "@/db/collection-files"
 import { Tables } from "@/supabase/types"
 import { LLMID } from "@/types"
-import { useContext } from "react"
+import { useContext, useState } from "react"
 
 export const usePromptAndCommand = () => {
+  const [localInput, setLocalInput] = useState<string>("")
+  const clearInput = () => setLocalInput("")
+
   const {
     chatFiles,
     setNewMessageFiles,
-    userInput,
-    setUserInput,
     setShowFilesDisplay,
     setIsPromptPickerOpen,
     setIsFilePickerOpen,
@@ -62,12 +63,12 @@ export const usePromptAndCommand = () => {
       setAtCommand("")
     }
 
-    setUserInput(value)
+    setLocalInput(value)
   }
 
   const handleSelectPrompt = (prompt: Tables<"prompts">) => {
     setIsPromptPickerOpen(false)
-    setUserInput(userInput.replace(/\/[^ ]*$/, "") + prompt.content)
+    setLocalInput(localInput.replace(/\/[^ ]*$/, "") + prompt.content)
   }
 
   const handleSelectUserFile = async (file: Tables<"files">) => {
@@ -94,7 +95,7 @@ export const usePromptAndCommand = () => {
       return prev
     })
 
-    setUserInput(userInput.replace(/#[^ ]*$/, ""))
+    setLocalInput(localInput.replace(/#[^ ]*$/, ""))
   }
 
   const handleSelectUserCollection = async (
@@ -125,18 +126,18 @@ export const usePromptAndCommand = () => {
       return [...prev, ...newFiles]
     })
 
-    setUserInput(userInput.replace(/#[^ ]*$/, ""))
+    setLocalInput(localInput.replace(/#[^ ]*$/, ""))
   }
 
   const handleSelectTool = (tool: Tables<"tools">) => {
     setIsToolPickerOpen(false)
-    setUserInput(userInput.replace(/![^ ]*$/, ""))
+    setLocalInput(localInput.replace(/![^ ]*$/, ""))
     setSelectedTools(prev => [...prev, tool])
   }
 
   const handleSelectAssistant = async (assistant: Tables<"assistants">) => {
     setIsAssistantPickerOpen(false)
-    setUserInput(userInput.replace(/@[^ ]*$/, ""))
+    setLocalInput(localInput.replace(/@[^ ]*$/, ""))
     setSelectedAssistant(assistant)
 
     setChatSettings({
@@ -180,6 +181,9 @@ export const usePromptAndCommand = () => {
   }
 
   return {
+    localInput,
+    setLocalInput,
+    clearInput,
     handleInputChange,
     handleSelectPrompt,
     handleSelectUserFile,

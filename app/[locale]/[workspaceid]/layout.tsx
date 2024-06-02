@@ -19,6 +19,7 @@ import { LLMID } from "@/types"
 import { useParams, useRouter } from "next/navigation"
 import { ReactNode, useContext, useEffect, useState } from "react"
 import Loading from "../loading"
+import { usePromptAndCommand } from "@/components/chat/chat-hooks/use-prompt-and-command"
 
 interface WorkspaceLayoutProps {
   children: ReactNode
@@ -46,7 +47,6 @@ export default function WorkspaceLayout({ children }: WorkspaceLayoutProps) {
     setSelectedWorkspace,
     setSelectedChat,
     setChatMessages,
-    setUserInput,
     setIsGenerating,
     setFirstTokenReceived,
     setChatFiles,
@@ -55,6 +55,8 @@ export default function WorkspaceLayout({ children }: WorkspaceLayoutProps) {
     setNewMessageImages,
     setShowFilesDisplay
   } = useContext(ChatbotUIContext)
+
+  const { clearInput } = usePromptAndCommand()
 
   const [loading, setLoading] = useState(true)
 
@@ -73,7 +75,7 @@ export default function WorkspaceLayout({ children }: WorkspaceLayoutProps) {
   useEffect(() => {
     ;(async () => await fetchWorkspaceData(workspaceId))()
 
-    setUserInput("")
+    clearInput()
     setChatMessages([])
     setSelectedChat(null)
 

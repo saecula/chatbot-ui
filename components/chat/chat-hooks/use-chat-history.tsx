@@ -1,5 +1,6 @@
 import { ChatbotUIContext } from "@/context/context"
 import { useContext, useEffect, useState } from "react"
+import { usePromptAndCommand } from "./use-prompt-and-command"
 
 /**
  * Custom hook for handling chat history in the chat component.
@@ -10,8 +11,8 @@ import { useContext, useEffect, useState } from "react"
  *   - setNewMessageContentToNextUserMessage: Sets the new message content to the next user message in the chat history.
  */
 export const useChatHistoryHandler = () => {
-  const { setUserInput, chatMessages, isGenerating } =
-    useContext(ChatbotUIContext)
+  const { chatMessages, isGenerating } = useContext(ChatbotUIContext)
+  const { setLocalInput } = usePromptAndCommand()
   const userRoleString = "user"
 
   const [messageHistoryIndex, setMessageHistoryIndex] = useState<number>(
@@ -41,7 +42,7 @@ export const useChatHistoryHandler = () => {
         ? chatMessages[tempIndex - 1]
         : null
     if (previousUserMessage) {
-      setUserInput(previousUserMessage.message.content)
+      setLocalInput(previousUserMessage.message.content)
       setMessageHistoryIndex(tempIndex - 1)
     }
   }
@@ -64,7 +65,7 @@ export const useChatHistoryHandler = () => {
       chatMessages.length > 0 && tempIndex < chatMessages.length - 1
         ? chatMessages[tempIndex + 1]
         : null
-    setUserInput(nextUserMessage?.message.content || "")
+    setLocalInput(nextUserMessage?.message.content || "")
     setMessageHistoryIndex(
       nextUserMessage ? tempIndex + 1 : chatMessages.length
     )

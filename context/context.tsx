@@ -68,8 +68,6 @@ interface ChatbotUIContext {
   setOpenaiAssistants: Dispatch<SetStateAction<any[]>>
 
   // PASSIVE CHAT STORE
-  userInput: string
-  setUserInput: Dispatch<SetStateAction<string>>
   chatMessages: ChatMessage[]
   setChatMessages: Dispatch<SetStateAction<ChatMessage[]>>
   chatSettings: ChatSettings | null
@@ -194,8 +192,6 @@ export const ChatbotUIContext = createContext<ChatbotUIContext>({
   setOpenaiAssistants: () => {},
 
   // PASSIVE CHAT STORE
-  userInput: "",
-  setUserInput: () => {},
   selectedChat: null,
   setSelectedChat: () => {},
   chatMessages: [],

@@ -26,9 +26,7 @@ export const useChatHandler = () => {
   const router = useRouter()
 
   const {
-    userInput,
     chatFiles,
-    setUserInput,
     setNewMessageImages,
     profile,
     setIsGenerating,
@@ -80,7 +78,6 @@ export const useChatHandler = () => {
   const handleNewChat = async () => {
     if (!selectedWorkspace) return
 
-    setUserInput("")
     setChatMessages([])
     setSelectedChat(null)
     setChatFileItems([])
@@ -192,11 +189,8 @@ export const useChatHandler = () => {
     messageContent: string,
     chatMessages: ChatMessage[],
     isRegeneration: boolean
-  ) => {
-    const startingInput = messageContent
-
+  ): Promise<{ success: boolean }> => {
     try {
-      setUserInput("")
       setIsGenerating(true)
       setIsPromptPickerOpen(false)
       setIsFilePickerOpen(false)
@@ -240,7 +234,7 @@ export const useChatHandler = () => {
         setToolInUse("retrieval")
 
         retrievedFileItems = await handleRetrieval(
-          userInput,
+          messageContent,
           newMessageFiles,
           chatFiles,
           chatSettings!.embeddingsProvider,
@@ -382,10 +376,11 @@ export const useChatHandler = () => {
 
       setIsGenerating(false)
       setFirstTokenReceived(false)
+      return { success: true }
     } catch (error) {
       setIsGenerating(false)
       setFirstTokenReceived(false)
-      setUserInput(startingInput)
+      return { success: false }
     }
   }
 
@@ -412,7 +407,6 @@ export const useChatHandler = () => {
 
   return {
     chatInputRef,
-    prompt,
     handleNewChat,
     handleSendMessage,
     handleFocusChatInput,
